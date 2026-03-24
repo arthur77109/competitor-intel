@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competitor Intel — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080b0f; --surface: #0f1318; --border: #1e2730; --border2: #2a3540;
+    --text: #e2e8f0; --text2: #94a3b8; --text3: #5a6a7a;
+    --accent: #38bdf8; --red: #f87171; --green: #34d399;
+    --mono: 'DM Mono', monospace; --display: 'Syne', sans-serif;
+  }
+  body {
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+  }
+  .box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 48px 40px; width: 100%; max-width: 360px;
+    text-align: center;
+  }
+  .dot { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 14px var(--accent); margin: 0 auto 20px; }
+  h1 { font-family: var(--display); font-size: 18px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .sub { font-size: 11px; color: var(--text3); margin-bottom: 32px; letter-spacing: 0.06em; }
+  input[type=password] {
+    width: 100%; background: #0a0d11; border: 1px solid var(--border2);
+    border-radius: 6px; padding: 12px 16px; color: var(--text);
+    font-family: var(--mono); font-size: 14px; outline: none;
+    text-align: center; letter-spacing: 0.15em; margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  input[type=password]:focus { border-color: var(--accent); }
+  input[type=password]::placeholder { letter-spacing: 0.05em; color: var(--text3); }
+  button {
+    width: 100%; background: var(--accent); color: #000; border: none;
+    border-radius: 6px; padding: 12px; font-family: var(--display);
+    font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+    cursor: pointer; transition: all 0.2s;
+  }
+  button:hover { background: #7dd3fc; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .error { font-size: 11px; color: var(--red); margin-top: 12px; min-height: 16px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="dot"></div>
+  <h1>Competitor Intel</h1>
+  <div class="sub">ELEVATE THERAPY CENTER // PRIVATE</div>
+  <input type="password" id="pw" placeholder="Enter password" onkeydown="if(event.key==='Enter') login()">
+  <button onclick="login()" id="btn">Enter</button>
+  <div class="error" id="err"></div>
+</div>
+<script>
+async function login() {
+  const pw = document.getElementById('pw').value;
+  const btn = document.getElementById('btn');
+  const err = document.getElementById('err');
+  if (!pw) return;
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  err.textContent = '';
+  try {
+    const res = await fetch('/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      window.location.href = '/app';
+    } else {
+      err.textContent = 'Incorrect password.';
+      btn.disabled = false;
+      btn.textContent = 'Enter';
+      document.getElementById('pw').value = '';
+    }
+  } catch(e) {
+    err.textContent = 'Connection error. Try again.';
+    btn.disabled = false;
+    btn.textContent = 'Enter';
+  }
+}
+</script>
+</body>
+</html>
